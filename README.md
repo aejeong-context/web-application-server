@@ -15,7 +15,24 @@
 * 각 요구사항을 구현하는 것이 중요한 것이 아니라 구현 과정을 통해 학습한 내용을 인식하는 것이 배움에 중요하다. 
 
 ### 요구사항 1 - http://localhost:8080/index.html로 접속시 응답
-* 
+* BufferedReader 를 배울 수 있었다. 
+  - 장점
+    입력된 데이터가 바로 전달되지 않고 버퍼를 거쳐 전달되므로 데이터 처리 효율성이 높다.
+    많은 양의 데이터를 처리할 때 유리하다.
+  - 사용법
+    BufferedReader buffer = new BufferedReader(new InputStreamReader());
+    String line = buffer.readLine();  -> 라인 단위로 나눠진다.
+  - 데이터 가공법
+    1. StringTokenizer st = new StringTokenizer(line);
+       st.nextToken()
+    2. String[] tk = line.split(" ");
+    
+* Files.readAllByres 를 배울 수 있었다.
+  - 프로젝트 내의 파일을 읽을 때 사용했는데 
+    1. byte[] body = Files.readAllBytes(new File("./webapp"+"/index.html").toPath());
+    2. byte[] body = Files.readAllBytes(Paths.get("./webapp/index.html")); 
+    를 사용하여 index.html 의 내용을 response 해주었다.
+    1번과 같이 파일 객체를 새로 선언하는 것보다 Paths 를 사용하는게 더 효율적일까?   
 
 ### 요구사항 2 - get 방식으로 회원가입
 * 
