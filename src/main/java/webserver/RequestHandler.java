@@ -40,7 +40,8 @@ public class RequestHandler extends Thread {
       if (line != null) {
         String[] tokens = line.split(" ");
         if (tokens[1].equals("/index")) {
-//          byte[] body = Files.readAllBytes(new File("./webapp" + "/index.html").toPath());
+          //          byte[] body = Files.readAllBytes(new File("./webapp" +
+          // "/index.html").toPath());
           byte[] body = Files.readAllBytes(Paths.get("./webapp/index.html"));
           System.out.println(st.nextToken() + " 1");
           System.out.println(st.nextToken() + " 2");
@@ -50,7 +51,7 @@ public class RequestHandler extends Thread {
         }
 
         // 회원가입 버튼
-        if (tokens[1].equals("/user/form.html")){
+        if (tokens[1].equals("/user/form.html")) {
           byte[] body = Files.readAllBytes(Paths.get("./webapp/user/form.html"));
           response200Header(dos, body.length);
           responseBody(dos, body);
@@ -62,7 +63,8 @@ public class RequestHandler extends Thread {
         if (index > 0) {
           String requestPath = tokens[1].substring(0, index);
           if (requestPath.equals("/user/create")) {
-            Map<String, String> lineMap = HttpRequestUtils.parseQueryString(line);
+            Map<String, String> lineMap =
+                HttpRequestUtils.parseQueryString(tokens[1].substring(index + 1));
             String userId = lineMap.get("userId");
             String password = lineMap.get("password");
             String name = lineMap.get("name");
@@ -72,7 +74,6 @@ public class RequestHandler extends Thread {
             System.out.println(DataBase.findUserById(userId));
           }
         }
-
       }
       byte[] body = "Hello Ae jeong".getBytes();
       response200Header(dos, body.length);
