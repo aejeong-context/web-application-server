@@ -35,10 +35,14 @@
     1번과 같이 파일 객체를 새로 선언하는 것보다 Paths 를 사용하는게 더 효율적일까?   
 
 ### 요구사항 2 - get 방식으로 회원가입
-* 
+* request url 로 받은 요청을 substring 하여 url ,parameter 을 분리하여 DB에 insert 
 
 ### 요구사항 3 - post 방식으로 회원가입
-* 
+*  // 대상 버퍼, 문자 저장할 시작점, 읽을 최대 문자 수
+   br.read(body, 0, contentLength);
+   header 뒤에 한줄 띄고 나서 body의 값을 읽을 수 있기 때문에 
+   header에서 Content-Length 를 읽어와 IOUtils 에 작성해주신 메서드를 통해 body를 읽어낼 수 있었다.
+   처음에는 header 포함 글자 수 인줄 알았는데 기본이 부족한 탓이다! 오늘도 배워간다!!
 
 ### 요구사항 4 - redirect 방식으로 이동
 * 

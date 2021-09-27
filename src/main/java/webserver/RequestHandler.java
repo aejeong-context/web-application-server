@@ -12,6 +12,7 @@ import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.HttpRequestUtils;
+import util.IOUtils;
 
 public class RequestHandler extends Thread {
   private static final Logger log = LoggerFactory.getLogger(RequestHandler.class);
@@ -57,21 +58,37 @@ public class RequestHandler extends Thread {
           responseBody(dos, body);
         }
 
+        // get 방식 회원가입
         int index = tokens[1].indexOf("?");
-
-        // 회원가입 제출
         if (index > 0) {
           String requestPath = tokens[1].substring(0, index);
           if (requestPath.equals("/user/create")) {
             Map<String, String> lineMap =
                 HttpRequestUtils.parseQueryString(tokens[1].substring(index + 1));
-            String userId = lineMap.get("userId");
-            String password = lineMap.get("password");
-            String name = lineMap.get("name");
-            String email = lineMap.get("email");
-            User user = new User(userId, password, name, email);
-            DataBase.addUser(user);
-            System.out.println(DataBase.findUserById(userId));
+            saveUser(lineMap);
+          }
+        }
+
+        // post 방식 회원가입
+        if (tokens[1].equals("/user/create")) {
+          String dataLength = "";
+          while (!line.equals("")) {
+            log.debug(line);
+            if (line.contains("Content-Length")) {
+              String[] lineItem = line.split(" ");
+              dataLength = lineItem[1];
+            }
+            line = bufferedReader.readLine();
+          }
+
+          if (!dataLength.equals("")) {
+
+            String requestBody = IOUtils.readData(bufferedReader, Integer.parseInt(dataLength));
+            log.debug(dataLength);
+            log.debug(requestBody);
+
+            Map<String, String> lineMap = HttpRequestUtils.parseQueryString(requestBody);
+            saveUser(lineMap);
           }
         }
       }
@@ -101,5 +118,15 @@ public class RequestHandler extends Thread {
     } catch (IOException e) {
       log.error(e.getMessage());
     }
+  }
+
+  private void saveUser(Map<String, String> userParameter) {
+    String userId = userParameter.get("userId");
+    String password = userParameter.get("password");
+    String name = userParameter.get("name");
+    String email = userParameter.get("email");
+    User user = new User(userId, password, name, email);
+    DataBase.addUser(user);
+    System.out.println(DataBase.findUserById(userId));
   }
 }

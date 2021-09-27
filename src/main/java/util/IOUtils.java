@@ -14,6 +14,7 @@ public class IOUtils {
      */
     public static String readData(BufferedReader br, int contentLength) throws IOException {
         char[] body = new char[contentLength];
+        // 대상 버퍼, 문자 저장할 시작점, 읽을 최대 문자 수
         br.read(body, 0, contentLength);
         return String.copyValueOf(body);
     }
