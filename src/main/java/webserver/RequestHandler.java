@@ -1,7 +1,9 @@
 package webserver;
 
 import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.Socket;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Map;
@@ -90,6 +92,7 @@ public class RequestHandler extends Thread {
             Map<String, String> lineMap = HttpRequestUtils.parseQueryString(requestBody);
             saveUser(lineMap);
           }
+          response302Header(dos, "/index");
         }
       }
       byte[] body = "Hello Ae jeong".getBytes();
@@ -105,6 +108,17 @@ public class RequestHandler extends Thread {
       dos.writeBytes("HTTP/1.1 200 OK \r\n");
       dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
       dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
+      dos.writeBytes("\r\n");
+    } catch (IOException e) {
+      log.error(e.getMessage());
+    }
+  }
+
+  private void response302Header(DataOutputStream dos, String url) {
+    try {
+
+      dos.writeBytes("HTTP/1.1 302 Redirect \r\n");
+      dos.writeBytes("Location: " + url + "\r\n");
       dos.writeBytes("\r\n");
     } catch (IOException e) {
       log.error(e.getMessage());
