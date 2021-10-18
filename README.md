@@ -53,7 +53,10 @@
   
 
 ### 요구사항 5 - cookie
-* 
+* RequestBody 에 있는 값을 읽어 데이터베이스를 확인 후 유저 비교한다. 다른 부분은 모두 같지만
+  Response 가 약간 달랐다.ResponseHeader(응답헤더) 에 Set-Cookie 을 추가하여 해당 유저가 유효한지 검사 후
+  key=value 로 전달되었다.
+
 
 ### 요구사항 6 - stylesheet 적용
 * 

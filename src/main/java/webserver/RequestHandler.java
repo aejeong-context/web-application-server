@@ -42,6 +42,7 @@ public class RequestHandler extends Thread {
       StringTokenizer st = new StringTokenizer(line);
       if (line != null) {
         String[] tokens = line.split(" ");
+        // tokens[1] -> 요청 url
         if (tokens[1].equals("/index")) {
           //          byte[] body = Files.readAllBytes(new File("./webapp" +
           // "/index.html").toPath());
@@ -59,6 +60,30 @@ public class RequestHandler extends Thread {
           response200Header(dos, body.length);
           responseBody(dos, body);
         }
+        // 로그인 버튼
+        if (tokens[1].equals("/user/login.html")) {
+          byte[] body = Files.readAllBytes(Paths.get("./webapp/user/login.html"));
+          response200Header(dos, body.length);
+          responseBody(dos, body);
+        }
+        if (tokens[1].equals("/user/login")) {
+          String dataLength = "";
+          String checkUser = "";
+          while (!line.equals("")) {
+            if (line.contains("Content-Length")) {
+              String[] lineItem = line.split(" ");
+              dataLength = lineItem[1];
+            }
+            line = bufferedReader.readLine();
+          }
+
+          if (!dataLength.equals("")) {
+            String requestBody = IOUtils.readData(bufferedReader, Integer.parseInt(dataLength));
+            Map<String, String> lineMap = HttpRequestUtils.parseQueryString(requestBody);
+            checkUser = findUser(lineMap);
+          }
+          cookie200Header(dos, checkUser);
+        }
 
         // get 방식 회원가입
         int index = tokens[1].indexOf("?");
@@ -74,12 +99,13 @@ public class RequestHandler extends Thread {
         // post 방식 회원가입
         if (tokens[1].equals("/user/create")) {
           String dataLength = "";
+          // InputStream 라인이 없을 때 까지
           while (!line.equals("")) {
-            log.debug(line);
             if (line.contains("Content-Length")) {
               String[] lineItem = line.split(" ");
               dataLength = lineItem[1];
             }
+            // 계속해서 다음 라인 확인
             line = bufferedReader.readLine();
           }
 
@@ -95,6 +121,7 @@ public class RequestHandler extends Thread {
           response302Header(dos, "/index");
         }
       }
+
       byte[] body = "Hello Ae jeong".getBytes();
       response200Header(dos, body.length);
       responseBody(dos, body);
@@ -108,6 +135,18 @@ public class RequestHandler extends Thread {
       dos.writeBytes("HTTP/1.1 200 OK \r\n");
       dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
       dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
+      dos.writeBytes("\r\n");
+    } catch (IOException e) {
+      log.error(e.getMessage());
+    }
+  }
+
+  private void cookie200Header(DataOutputStream dos, String cookie) {
+    try {
+      dos.writeBytes("HTTP/1.1 200 OK \r\n");
+      dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
+      //      dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
+      dos.writeBytes("Set-Cookie: " + cookie);
       dos.writeBytes("\r\n");
     } catch (IOException e) {
       log.error(e.getMessage());
@@ -142,5 +181,18 @@ public class RequestHandler extends Thread {
     User user = new User(userId, password, name, email);
     DataBase.addUser(user);
     System.out.println(DataBase.findUserById(userId));
+  }
+
+  private String findUser(Map<String, String> userParameter) {
+    String checkLogin = "logined=false";
+    String userId = userParameter.get("userId");
+    String password = userParameter.get("password");
+    System.out.println(userId);
+    System.out.println(password);
+    User user = DataBase.findUserById(userId);
+    if (user.getPassword().equals(password)) {
+      checkLogin = "logined=true";
+    }
+    return checkLogin;
   }
 }
